@@ -15,17 +15,6 @@ const server = new McpServer({
   },
 });
 
-async function main() {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  console.error("Weather MCP Server running on stdio");
-}
-
-main().catch((error) => {
-  console.error("Fatal error in main():", error);
-  process.exit(1);
-});
-
 
 // MCPコアコンセプトのリソースに当たる
 // クライアントが読み取ることができるファイルのようなデータ (API レスポンスやファイルの内容など)
@@ -95,6 +84,7 @@ interface ForecastResponse {
     periods: ForecastPeriod[];
   };
 }
+
 
 
 // MCPコアコンセプトのツールに当たる
@@ -234,3 +224,17 @@ server.tool(
     };
   },
 );
+// server.tool()でツールを登録した後に、server.connect()を呼び出す必要がある。
+// そうしないと Cannot register capabilities after connecting to transport のエラーが出る
+async function main() {
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
+  console.error("Weather MCP Server running on stdio");
+}
+
+main().catch((error) => {
+  console.error("Fatal error in main():", error);
+  process.exit(1);
+});
+
+
